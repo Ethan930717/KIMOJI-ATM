@@ -24,7 +24,6 @@ def find_media_in_folder(file_dir, mediainfo_supported_formats, bdinfo_supported
             if media_type:
                 # 如果在这个子目录或其子目录中找到媒体文件，则返回当前子目录的路径及媒体类型
                 return full_path, media_type
-
     return None
 
 def has_media_file(file_dir, mediainfo_supported_formats, bdinfo_supported_formats):
@@ -48,9 +47,12 @@ def has_media_file(file_dir, mediainfo_supported_formats, bdinfo_supported_forma
 def find_media_folder(file_dir):
     mediainfo_supported_formats = {'mkv', 'mp4', 'avi', 'mov', 'wmv', 'flv', 'mpg', 'mpeg'}
     bdinfo_supported_formats = {'bdmv', 'iso', 'm2ts', 'ts'}
-
-    return find_media_in_folder(file_dir, mediainfo_supported_formats, bdinfo_supported_formats)
-
+    result = find_media_in_folder(file_dir, mediainfo_supported_formats, bdinfo_supported_formats)
+    if result:
+        return result
+    else:
+        # 没有找到合适的文件夹，返回 None
+        return None
 
 
 # 示例调用

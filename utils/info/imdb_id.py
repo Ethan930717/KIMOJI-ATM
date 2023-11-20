@@ -1,6 +1,8 @@
 from tmdbv3api import Movie, TV
 import requests
 import re
+import logging
+logger = logging.getLogger(__name__)
 
 def get_imdb_id(tmdb_id, item_type):
     imdb_id = None
@@ -27,25 +29,30 @@ def search_imdb(title):
         if data and 'imdbID' in data:
             imdb_id = data['imdbID']
             category = categorize_media(data)
+            logger.info(f"找到匹配的 IMDb ID: {imdb_id}, 类型: {category}")
             return imdb_id, category
     return None, None
 
 def categorize_media(data):
     item_type = data.get('Type')
     genres = data.get('Genre', '').lower()
+    logger.info(f"使用IMDb判定上传类别成功")
     if item_type == 'movie':
-        return "movie"
+        if 'anim' in genres:
+            return "anime-movie"
+        else:
+            return "movie"
     elif "documentary" in genres:
         return "doc"
     elif item_type == 'series':
-        if 'animation' in genres and 'anime' not in genres:
-            return "anime-tv"
+        if 'anim' not in genres:
+                return "anime-tv"
         elif 'animation' in genres and 'anime' in genres:
-            return "anime-movie"
-        elif 'reality-tv' in genres:
-            return "show"
+                return "anime-movie"
+        elif 'reality-tv' in genres or 'show' in genres:
+                return "show"
         else:
-            return "series"
+                return "series"
     else:
         return "other"
 

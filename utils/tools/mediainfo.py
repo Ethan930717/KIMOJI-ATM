@@ -26,7 +26,6 @@ def parse_resolution(mediainfo_output):
     scan_type = match_scan_type.group(1) if match_scan_type else 'Progressive'
     if match_resolution:
         height = int("".join(match_resolution.group(1, 2)))
-        print(height)
         if height < 720:
             return "SD"
         elif height == 720:
@@ -65,11 +64,20 @@ def save_mediainfo_to_file(folder_path, output_file_path):
                 logger.info(f"解析到的分辨率为: {resolution}")
                 logger.info(f"视频格式: {video_format}, 音频格式: {audio_format}")
 
-            return resolution, video_format, audio_format, largest_video_file
+            return resolution, video_format, audio_format, largest_video_file, mediainfo_output
         except subprocess.CalledProcessError as e:
             logger.error(f"获取 MediaInfo 时出错: {e}")
-            return None, None, None, None
+            return None, None, None, None, None
     else:
         logger.warning("在文件夹中未找到视频文件")
-        return None, None, None
+        return None, None, None, None, None
+
+def read_mediainfo(output_file_path):
+    try:
+        with open(output_file_path, 'r', encoding='utf-8') as file:  # 使用utf-8编码打开
+            return file.read()  # 读取并返回文件内容
+    except FileNotFoundError:
+        return "File not found."
+    except Exception as e:
+        return str(e)
 

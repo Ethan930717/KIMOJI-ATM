@@ -85,6 +85,7 @@ def upload_images_and_get_links(image_paths):
         if upload_result:
             pic_urls.append(upload_result)
     return '\n'.join(pic_urls)
+
 # 示例调用
 #file_path = '/Users/Ethan/Desktop/media/超级飞侠.Super.Wings.S10.2021.4K.WEB-DL.HEVC.AAC-CHDWEB/超级飞侠.Super.Wings.S10E01.2021.4K.WEB-DL.HEVC.AAC-CHDWEB.mp4'  # 视频文件路径
 #folder_path = '/Users/Ethan/Desktop/media'  # 输出目录
