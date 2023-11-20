@@ -6,3 +6,5 @@ log/*
 test
 config.yaml
 .DS_Store
+dist
+KIMOJI_ATM.egg-info
