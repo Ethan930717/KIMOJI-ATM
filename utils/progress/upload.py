@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import logging
 import os
 import re
+import sys
 from utils.progress.qbittorrent import add_torrent_to_qbittorrent
 current_file_path = os.path.abspath(__file__)
 project_root_dir = os.path.dirname(os.path.dirname(os.path.dirname(current_file_path)))
@@ -175,11 +176,16 @@ def kimoji_upload(torrent_path, file_name, username, password, chinese_title, en
                         if "download_check" in torrent_page_url:
                             # 发种成功，修改URL获取下载链接
                             torrent_download_url = re.sub("download_check", "download", torrent_page_url)
-                            torrent_download_url += f"?passkey={passkey}"
-                            logger.info(f"种子下载URL: {torrent_download_url},正在尝试将种子添加到下载器")
+                            #torrent_download_url += f"?passkey={passkey}"
+                            logger.info(f"种子下载URL: {torrent_download_url},正在尝试下载种子并添加到下载器")
+                            temp_torrent_path = os.path.join('log', 'temp.torrent')
                             file_path = os.path.join(file_name, "kimoji_exclude")
                             open(file_path, 'w').close()
-                            add_torrent_to_qbittorrent(torrent_download_url,project_root_dir)
+                            if download_torrent_file_with_scraper(scraper, torrent_download_url, temp_torrent_path):
+                                add_torrent_to_qbittorrent(temp_torrent_path, project_root_dir)
+                            else:
+                                logger.error("下载种子文件失败")
+                                return False
                         else:
                             logger.error("发种未成功，未找到期望的重定向URL，请查看日志")
                             with open(log_file_path, 'w', encoding='utf-8') as log_file:
@@ -199,8 +205,17 @@ def kimoji_upload(torrent_path, file_name, username, password, chinese_title, en
         logger.error("KIMOJI登陆页面打开失败，请检查网站运行状况")
         return False
 
-
-
+def download_torrent_file_with_scraper(scraper, torrent_url, save_path):
+    try:
+        response = scraper.get(torrent_url)
+        response.raise_for_status()
+        with open(save_path, 'wb') as f:
+            f.write(response.content)
+        logger.info("种子下载成功")
+        return True
+    except Exception as e:
+        logger.error(f"下载种子文件失败: {e}")
+        return False
 
 
 
