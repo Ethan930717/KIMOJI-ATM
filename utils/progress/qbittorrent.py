@@ -1,11 +1,9 @@
 import qbittorrentapi
-import requests
 from utils.progress.config_loader import load_config
 import logging
 import time
 import sys
 import os
-import subprocess
 logger = logging.getLogger(__name__)
 
 
